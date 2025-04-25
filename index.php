@@ -21,8 +21,8 @@
     <div id="heroContent" class="text-center">
       <h1 class="text-5xl font-bold mb-6">Welcome to Our Bookstore</h1>
       <div class="space-x-4">
-        <a href="login.php" class="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition">Login</a>
-        <a href="enroll.php" class="bg-transparent border border-white px-6 py-2 rounded-full font-semibold hover:bg-white hover:text-black transition">Enroll</a>
+        <a href="auth/login_form.php" class="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition">Login</a>
+        <a href="auth/enroll_form.php" class="bg-transparent border border-white px-6 py-2 rounded-full font-semibold hover:bg-white hover:text-black transition">Enroll</a>
       </div>
     </div>
 

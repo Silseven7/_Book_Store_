@@ -2,7 +2,7 @@
 
 <!--
 
-- header.php is the shared background for login and enroll taken from index.php background
+- header.php is the shared background for login and enroll forms, it's content is index.php's background
 
 
 -->
