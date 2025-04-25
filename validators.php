@@ -9,12 +9,17 @@ function is_email_invalid($email){
   return !filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-function is_username_taken($pdo, $username){
-  return get_username($pdo, $username) == $username;
+function does_username_exist($pdo, $username){
+  return get_username($pdo, $username) !== false;
 }
 
 function is_email_taken($pdo, $email){
-  return get_email($pdo, $email) == $email;
+  return get_email($pdo, $email) !== false;
 }
 
-?>
+function does_password_exist($pdo, $password, $username){
+  $user = get_user_info($pdo, $username);
+  return $user && password_verify($password, $user['password']);
+}
+
+?> 
