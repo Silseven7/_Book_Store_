@@ -1,86 +1,93 @@
 <?php
-  require "header.php";
-?>
-  
-  <!-- Validation for inputs, will be removed to a different page once Ajax implemented -->
-<?php
-  $error_message = "";
-  if(isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST'){
-    $username = $_POST['username'];
-    $real_name = $_POST['real_name'];
-    $password = $_POST['password'];
-    $email = $_POST['email'];
+require "header.php";
+session_start();
+$error_message = "";
 
-    $flag = 0;
+if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+  require "../validators.php";
 
-    require "../validators.php";
-    if(is_input_empty($real_name, $username, $password, $email)){
-      $error_message = "All input fields are required...";
-      $flag = 1;
-    }
-    else if(is_email_invalid($email)){
-      $error_message = "Email is not valid, try again...";
-      $flag = 1;
-    }
-    else if(does_username_exist($pdo, $username)){
-      $error_message = "Username is taken, try different username";
-      $flag = 1;
-    }
-    else if(is_email_taken($pdo, $email)){
-      $error_message = "Email is not valid, try different email";
-      $flag = 1;
-    }
-    
+  $username = $_POST['username'];
+  $real_name = $_POST['real_name'];
+  $password = $_POST['password'];
+  $email = $_POST['email'];
 
-    if($flag == 0){
-      $password = password_hash($password, PASSWORD_DEFAULT); 
+  if (is_input_empty($real_name, $username, $password, $email)) {
+    $error_message = "⚠️ All fields are required.";
+  } elseif (is_email_invalid($email)) {
+    $error_message = "⚠️ Invalid email format.";
+  } elseif (does_username_exist($pdo, $username)) {
+    $error_message = "⚠️ Username is already taken.";
+  } elseif (is_email_taken($pdo, $email)) {
+    $error_message = "⚠️ Email is already registered.";
+  } else {
+    $password = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("INSERT INTO users (real_name, username, password, email)
+                           VALUES (:real_name, :username, :password, :email)");
+    $stmt->bindParam(':real_name', $real_name);
+    $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':password', $password);
+    $stmt->bindParam(':email', $email);
 
-      $query = "INSERT INTO users(real_name, username, password, email)
-      VALUES (:real_name, :username, :password, :email)";
-      $stmt = $pdo->prepare($query);
-      $stmt->bindParam(':real_name', $real_name);
-      $stmt->bindParam(':username', $username);
-      $stmt->bindParam(':password', $password);
-      $stmt->bindParam(':email', $email);
-
-      if ($stmt->execute()) {
-          echo "<script>alert('User enrolled successfully!');</script>";
-      } else {
-          echo "<script>alert('Something went wrong. Please try again.');</script>";
-      }
+    if ($stmt->execute()) {
+      echo "<script>alert('🎉 User enrolled successfully!'); window.location.href = 'login_form.php';</script>";
+      exit;
+    } else {
+      $error_message = "❌ Something went wrong. Please try again.";
     }
-  
   }
-
+}
 ?>
 
-  <div class="bg-white text-black p-6 rounded-lg shadow-md max-w-md w-full z-10 relative">
+<div class="bg-white text-black p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
+  <h2 class="text-2xl font-semibold mb-6 text-center">📝 Enroll to Bookstore</h2>
 
-    <p><?php echo $error_message; ?></p> <br>
+  <?php if (!empty($error_message)): ?>
+    <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
+      <?= $error_message ?>
+    </div>
+  <?php endif; ?>
 
-    <form action="enroll_form.php" method="POST">
-      <label>Real Name:</label>
-      <input type="text" name="real_name" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <br><br>
+  <form action="enroll_form.php" method="POST" class="space-y-5">
+    <div>
+      <label class="block text-sm font-medium">Real Name</label>
+      <input type="text" name="real_name" required
+             class="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
 
-      <label>Username:</label>
-      <input type="text" name="username" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <br><br>
+    <div>
+      <label class="block text-sm font-medium">Username</label>
+      <input type="text" name="username" required
+             class="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
 
-      <label>Password:</label>
-      <input type="password" name="password" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <br><br>
+    <div>
+      <label class="block text-sm font-medium">Password</label>
+      <input type="password" name="password" required
+             class="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
 
-      <label>Email:</label>
-      <input type="text" name="email" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <br><br>
+    <div>
+      <label class="block text-sm font-medium">Email</label>
+      <input type="email" name="email" required
+             class="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
 
-      <input type="submit" name="enroll" value="Enroll" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <br><br>
-    </form>
-    
-    <a href="../">Go back (click me)</a>
-  </div>
+    <button type="submit" name="enroll"
+            class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+      Enroll
+    </button>
+  </form>
+
+  <p class="mt-6 text-center text-sm">
+    Already have an account?
+    <a href="login_form.php" class="text-blue-600 hover:underline">Login here</a>
+  </p>
+
+  <p class="mt-2 text-center text-sm">
+    <a href="../" class="text-gray-500 hover:underline">⬅ Back to Home</a>
+  </p>
+</div>
 
 </body>
 </html>
+

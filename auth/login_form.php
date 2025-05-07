@@ -1,56 +1,64 @@
 <?php
 require "header.php";
-?>
-  <!-- Validation for inputs, will be removed to a different page once Ajax implemented -->
-  <?php
-  $error_message = "";
-  if(isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST'){
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-   
-    $flag = 0;
+session_start();
+$error_message = "";
 
-    require "../validators.php";
-   
-    if(!does_username_exist($pdo, $username)){
-      $error_message = "Username is incorrect, try again";
-      $flag = 1;
-    }
-    else if(!does_password_exist($pdo, $password, $username)){
-      $error_message = "Password is incorrect, try again";
-      $flag = 1;
-    }
-   
-    if($flag == 0){
-      session_start();
-      $_SESSION['logged_in'] = true;
-      header("Location: ../dashboard.php");
-      die();
-    }
+if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+  require "../validators.php";
+  $username = $_POST['username'];
+  $password = $_POST['password'];
 
+  if (!does_username_exist($pdo, $username)) {
+    $error_message = "❌ Username is incorrect, try again.";
+  } elseif (!does_password_exist($pdo, $password, $username)) {
+    $error_message = "❌ Password is incorrect, try again.";
+  } else {
+    session_regenerate_id(true);
+    $_SESSION['logged_in'] = true;
+    header("Location: ../dashboard.php");
+    exit;
   }
+}
+?>
 
-  ?>
+<div class="bg-white text-black p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
+  <h2 class="text-2xl font-semibold mb-6 text-center">🔐 Login to Bookstore</h2>
 
-<div class="bg-white text-black p-6 rounded-lg shadow-md max-w-md w-full z-10 relative">
-  <p><?php echo "$error_message"; ?></p> <br>
-  
-  <form action="login_form.php" method="POST">
+  <?php if (!empty($error_message)): ?>
+    <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
+      <?= $error_message ?>
+    </div>
+  <?php endif; ?>
 
-    <label>Username:</label>
-    <input type="text" name="username" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <br><br>
+  <form action="login_form.php" method="POST" class="space-y-5">
+    <div>
+      <label class="block text-sm font-medium">Username</label>
+      <input type="text" name="username" required
+             class="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
 
-    <label>Password:</label>
-    <input type="password" name="password" class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <br><br>
+    <div>
+      <label class="block text-sm font-medium">Password</label>
+      <input type="password" name="password" required
+             class="w-full px-4 py-2 mt-1 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
 
-    <input type="submit" name="login" value="Login"  class="text-black bg-white px-3 py-2 rounded-lg shadow-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <br><br>
+    <button type="submit" name="login"
+            class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+      Log In
+    </button>
   </form>
 
-  <a href="../"> Go back(click me) </a>
+  <p class="mt-6 text-center text-sm">
+    Don't have an account?
+    <a href="enroll_form.php" class="text-blue-600 hover:underline">Enroll here</a>
+  </p>
+
+  <p class="mt-2 text-center text-sm">
+    <a href="../" class="text-gray-500 hover:underline">⬅ Back to Home</a>
+  </p>
 </div>
 
 </body>
 </html>
+
