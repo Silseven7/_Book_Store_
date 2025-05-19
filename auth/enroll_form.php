@@ -1,10 +1,10 @@
 <?php
 require "header.php";
-session_start();
+
 $error_message = "";
 
 if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-  require "../validators.php";
+  require __DIR__ . '/../validators.php';
 
   $username = $_POST['username'];
   $real_name = $_POST['real_name'];
@@ -29,7 +29,7 @@ if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':email', $email);
 
     if ($stmt->execute()) {
-      echo "<script>alert('🎉 User enrolled successfully!'); window.location.href = 'login_form.php';</script>";
+      echo "<script>alert('🎉 User enrolled successfully!'); window.location.href = '/_Book_Store_/login_form';</script>";
       exit;
     } else {
       $error_message = "❌ Something went wrong. Please try again.";
@@ -47,7 +47,7 @@ if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   <?php endif; ?>
 
-  <form action="enroll_form.php" method="POST" class="space-y-5">
+  <form action="/_Book_Store_/enroll_form" method="POST" class="space-y-5">
     <div>
       <label class="block text-sm font-medium">Real Name</label>
       <input type="text" name="real_name" required
@@ -80,11 +80,11 @@ if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <p class="mt-6 text-center text-sm">
     Already have an account?
-    <a href="login_form.php" class="text-blue-600 hover:underline">Login here</a>
+    <a href="/_Book_Store_/login_form" class="text-blue-600 hover:underline">Login here</a>
   </p>
 
   <p class="mt-2 text-center text-sm">
-    <a href="../" class="text-gray-500 hover:underline">⬅ Back to Home</a>
+    <a href="/_Book_Store_/landing_page" class="text-gray-500 hover:underline">⬅ Back to Home</a>
   </p>
 </div>
 

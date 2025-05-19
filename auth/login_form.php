@@ -1,10 +1,11 @@
 <?php
 require "header.php";
-session_start();
+
 $error_message = "";
 
 if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-  require "../validators.php";
+  require __DIR__ . '/../validators.php';
+
   $username = $_POST['username'];
   $password = $_POST['password'];
 
@@ -15,7 +16,9 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
   } else {
     session_regenerate_id(true);
     $_SESSION['logged_in'] = true;
-    header("Location: ../dashboard.php");
+    $_SESSION['real_name'] = $_POST['real_name'];
+    $_SESSION['username'] = $_POST['username'];
+    header("Location: /_Book_Store_/dashboard");
     exit;
   }
 }
@@ -30,7 +33,7 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   <?php endif; ?>
 
-  <form action="login_form.php" method="POST" class="space-y-5">
+  <form action="/_Book_Store_/login_form" method="POST" class="space-y-5">
     <div>
       <label class="block text-sm font-medium">Username</label>
       <input type="text" name="username" required
@@ -51,11 +54,11 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <p class="mt-6 text-center text-sm">
     Don't have an account?
-    <a href="enroll_form.php" class="text-blue-600 hover:underline">Enroll here</a>
+    <a href="/_Book_Store_/enroll_form" class="text-blue-600 hover:underline">Enroll here</a>
   </p>
 
   <p class="mt-2 text-center text-sm">
-    <a href="../" class="text-gray-500 hover:underline">⬅ Back to Home</a>
+    <a href="/_Book_Store_/landing_page" class="text-gray-500 hover:underline">⬅ Back to Home</a>
   </p>
 </div>
 

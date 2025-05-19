@@ -1,11 +1,4 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-  header("Location: auth/login_form.php");
-  exit;
-}
-
 $real_name = $_SESSION['real_name'] ?? $_SESSION['username'] ?? 'Book Lover';
 ?>
 
@@ -26,20 +19,20 @@ $real_name = $_SESSION['real_name'] ?? $_SESSION['username'] ?? 'Book Lover';
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <a href="books.php" class="bg-blue-600 text-white py-5 px-4 rounded-2xl shadow-lg hover:bg-blue-700 transition text-center">
+      <a href="/_Book_Store_/books" class="bg-blue-600 text-white py-5 px-4 rounded-2xl shadow-lg hover:bg-blue-700 transition text-center">
         📖 Browse Books
       </a>
 
-      <a href="library.php" class="bg-green-500 text-white py-5 px-4 rounded-2xl shadow-lg hover:bg-green-600 transition text-center">
+      <a href="/_Book_Store_/library" class="bg-green-500 text-white py-5 px-4 rounded-2xl shadow-lg hover:bg-green-600 transition text-center">
         📚 My Library
       </a>
 
-      <a href="reviews.php" class="bg-yellow-500 text-white py-5 px-4 rounded-2xl shadow-lg hover:bg-yellow-600 transition text-center">
+      <a href="/_Book_Store_/reviews" class="bg-yellow-500 text-white py-5 px-4 rounded-2xl shadow-lg hover:bg-yellow-600 transition text-center">
         ✍️ My Reviews
       </a>
     </div>
 
-    <form action="auth/logout.php" method="POST" class="text-center mt-6">
+    <form action="/_Book_Store_/logout" method="POST" class="text-center mt-6">
       <button type="submit" class="py-2 px-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition">
         🚪 Logout
       </button>

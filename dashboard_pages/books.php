@@ -1,10 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['logged_in'])) {
-  header("Location: auth/login_form.php");
-  exit;
-}
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,6 +25,12 @@ if (!isset($_SESSION['logged_in'])) {
         </div>
       <?php endfor; ?>
     </div>
+
+    <a href="_Book_Store_/dashboard"
+      class="inline-block mt-8 px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors duration-300">
+        Go back to Dashboard
+    </a>
+
   </div>
 
 </body>
