@@ -1,14 +1,7 @@
-# Enable URL rewriting
 RewriteEngine On
 RewriteBase /_Book_Store_/
 
-# Route all requests to index.php if file/folder doesn't exist
+# If the request is not for a file or directory
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [QSA,L]
-
-# Block direct access to .php files (except index.php)
-# This works only for direct browser requests, not includes
-RewriteCond %{THE_REQUEST} \s/.*\.php[\s?] [NC]
-RewriteCond %{REQUEST_URI} !/index\.php [NC]
-RewriteRule .*\.php$ - [F,L]
+RewriteRule ^(.*)$ index.php [QSA,L] 

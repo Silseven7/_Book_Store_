@@ -1,4 +1,5 @@
 <?php 
+// Basic session configuration
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -25,14 +26,24 @@ $routes = [
     '/login_form' => 'auth/login_form.php',
 
     '/books' => 'dashboard_pages/books.php',
+    '/book_details' => 'dashboard_pages/book_details.php',
+    '/add_book' => 'dashboard_pages/add_book.php',
+    '/edit_book' => 'dashboard_pages/edit_book.php',
     '/dashboard' => 'dashboard_pages/dashboard.php',
     '/library' => 'dashboard_pages/library.php',
     '/logout' => 'dashboard_pages/logout.php',
-    '/reviews' => 'dashboard_pages/reviews.php'
+    '/reviews' => 'dashboard_pages/reviews.php',
+    '/profile' => 'dashboard_pages/profile.php',
+    '/shelves' => 'dashboard_pages/shelves.php',
+    '/reading_list' => 'dashboard_pages/reading_list.php'
 ];
 
 $auth_routes = ['/landing_page', '/header', '/enroll_form', '/login_form'];
-$dashboard_routes = ['/dashboard', '/books', '/library', '/logout', '/reviews'];
+$dashboard_routes = [
+    '/dashboard', '/books', '/book_details', '/add_book', '/edit_book',
+    '/library', '/logout', '/reviews', '/profile', 
+    '/shelves', '/reading_list'
+];
 
 // Redirect to login if trying to access dashboard and not logged in
 if (in_array($uri, $dashboard_routes) && (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] != true)) {

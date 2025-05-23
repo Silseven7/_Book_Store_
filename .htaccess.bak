@@ -1,0 +1,34 @@
+# Enable URL rewriting
+RewriteEngine On
+RewriteBase /_Book_Store_/
+
+# Route all requests to index.php if file/folder doesn't exist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# Block direct access to .php files (except index.php)
+RewriteCond %{THE_REQUEST} \s/.*\.php[\s?] [NC]
+RewriteCond %{REQUEST_URI} !/index\.php [NC]
+RewriteRule .*\.php$ - [F,L]
+
+# PHP settings
+php_value session.save_handler files
+php_value session.save_path "C:/xampp/tmp"
+php_flag display_errors on
+php_value error_reporting E_ALL
+
+# Prevent directory listing
+Options -Indexes
+
+# Allow access to sessions directory
+<IfModule mod_authz_core.c>
+    <Directory "sessions">
+        Require all granted
+    </Directory>
+</IfModule>
+
+# Prevent direct access to session files
+<FilesMatch "^sess_">
+    Require all denied
+</FilesMatch>
