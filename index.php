@@ -45,16 +45,22 @@ $dashboard_routes = [
     '/shelves', '/reading_list'
 ];
 
-// Redirect to login if trying to access dashboard and not logged in
-if (in_array($uri, $dashboard_routes) && (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] != true)) {
-    header('Location: ' . $base_path . '/landing_page');
-    exit;
+// Check if trying to access dashboard routes
+if (in_array($uri, $dashboard_routes)) {
+    // If not logged in, redirect to landing page
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+        header('Location: ' . $base_path . '/landing_page');
+        exit;
+    }
 }
 
-// Redirect to dashboard if logged in and trying to access auth pages
-if (in_array($uri, $auth_routes) && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
-    header('Location: ' . $base_path . '/dashboard');
-    exit;
+// Check if trying to access auth routes
+if (in_array($uri, $auth_routes)) {
+    // If already logged in, redirect to dashboard
+    if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+        header('Location: ' . $base_path . '/dashboard');
+        exit;
+    }
 }
 
 // load the page if the route exists

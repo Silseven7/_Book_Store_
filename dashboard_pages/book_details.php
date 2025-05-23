@@ -1,4 +1,9 @@
 <?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../database.php';
 
 if (!isset($_GET['id'])) {
@@ -86,17 +91,33 @@ $user_id = $_SESSION['user_id'] ?? null;
                 
                 <?php if ($user_id): ?>
                 <div class="mt-3">
-                    <div class="btn-group w-100">
-                        <button class="btn btn-outline-primary" onclick="updateReadingStatus('want_to_read')">
+                    <?php
+                    // Get current reading status
+                    $query = "SELECT status FROM reading_lists WHERE user_id = :user_id AND book_id = :book_id";
+                    $stmt = $pdo->prepare($query);
+                    $stmt->execute([':user_id' => $user_id, ':book_id' => $book_id]);
+                    $current_status = $stmt->fetchColumn();
+                    ?>
+                    <div class="btn-group w-100" data-book-id="<?php echo $book_id; ?>">
+                        <button class="btn btn-outline-primary <?php echo $current_status === 'want_to_read' ? 'active' : ''; ?>" 
+                                data-status="want_to_read"
+                                onclick="updateReadingStatus('want_to_read')">
                             <i class="fas fa-bookmark"></i> Want to Read
                         </button>
-                        <button class="btn btn-outline-primary" onclick="updateReadingStatus('currently_reading')">
+                        <button class="btn btn-outline-primary <?php echo $current_status === 'currently_reading' ? 'active' : ''; ?>" 
+                                data-status="currently_reading"
+                                onclick="updateReadingStatus('currently_reading')">
                             <i class="fas fa-book-open"></i> Currently Reading
                         </button>
-                        <button class="btn btn-outline-primary" onclick="updateReadingStatus('read')">
+                        <button class="btn btn-outline-primary <?php echo $current_status === 'read' ? 'active' : ''; ?>" 
+                                data-status="read"
+                                onclick="updateReadingStatus('read')">
                             <i class="fas fa-check"></i> Read
                         </button>
                     </div>
+                    <button class="btn btn-success w-100 mt-2" onclick="saveToLibrary()">
+                        <i class="fas fa-plus"></i> Save to Library
+                    </button>
                 </div>
                 <?php endif; ?>
             </div>
@@ -239,29 +260,102 @@ $user_id = $_SESSION['user_id'] ?? null;
             }
         });
 
-        // Reading status update
-        async function updateReadingStatus(status) {
-            try {
-                const response = await fetch('/_Book_Store_/api/update_reading_status.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        book_id: <?php echo $book_id; ?>,
-                        status: status
-                    })
+        function saveToLibrary() {
+            fetch('/_Book_Store_/api/save_book.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    book_id: <?php echo $book_id; ?>
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button appearance instead of showing alert
+                    const saveBtn = document.querySelector('.btn-success');
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved to Library';
+                    saveBtn.classList.remove('btn-success');
+                    saveBtn.classList.add('btn-secondary');
+                    saveBtn.disabled = true;
+                } else {
+                    // Show error in a more elegant way
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-2';
+                    errorDiv.textContent = data.message;
+                    document.querySelector('.btn-success').parentNode.appendChild(errorDiv);
+                    setTimeout(() => errorDiv.remove(), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger mt-2';
+                errorDiv.textContent = 'Error saving book to library';
+                document.querySelector('.btn-success').parentNode.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            });
+        }
+
+        function updateReadingStatus(status) {
+            const btnGroup = document.querySelector('.btn-group');
+            const buttons = btnGroup.querySelectorAll('.btn');
+            
+            // First update UI to show immediate feedback
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.status === status) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Then send request to server
+            fetch('/_Book_Store_/api/update_reading_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    book_id: <?php echo $book_id; ?>,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // If request failed, revert the UI change
+                    buttons.forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.dataset.status === '<?php echo $current_status; ?>') {
+                            btn.classList.add('active');
+                        }
+                    });
+                    
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-2';
+                    errorDiv.textContent = data.message;
+                    btnGroup.parentNode.appendChild(errorDiv);
+                    setTimeout(() => errorDiv.remove(), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // If request failed, revert the UI change
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.status === '<?php echo $current_status; ?>') {
+                        btn.classList.add('active');
+                    }
                 });
                 
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert('Error updating reading status. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error updating reading status. Please try again.');
-            }
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger mt-2';
+                errorDiv.textContent = 'Error updating reading status';
+                btnGroup.parentNode.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            });
         }
     </script>
 </body>

@@ -1,4 +1,9 @@
 <?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../database.php';
 
 // Check if user is logged in
@@ -8,16 +13,36 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 }
 
 $user_id = $_SESSION['user_id'];
+$status = $_GET['status'] ?? 'want_to_read'; // Default to want_to_read
 
-// Get user's library books
-$query = "SELECT b.*, ul.date_added 
-          FROM user_library ul 
-          JOIN books b ON ul.book_id = b.id 
-          WHERE ul.user_id = :user_id 
-          ORDER BY ul.date_added DESC";
+// Get user's reading list books
+$query = "SELECT b.*, rl.status, rl.date_added, rl.date_started, rl.date_finished 
+          FROM reading_lists rl 
+          JOIN books b ON rl.book_id = b.id 
+          WHERE rl.user_id = :user_id AND rl.status = :status 
+          ORDER BY rl.date_added DESC";
 $stmt = $pdo->prepare($query);
-$stmt->execute([':user_id' => $user_id]);
+$stmt->execute([':user_id' => $user_id, ':status' => $status]);
 $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get counts for each status
+$counts = [
+    'want_to_read' => 0,
+    'currently_reading' => 0,
+    'read' => 0
+];
+
+$count_query = "SELECT status, COUNT(*) as count 
+                FROM reading_lists 
+                WHERE user_id = :user_id 
+                GROUP BY status";
+$stmt = $pdo->prepare($count_query);
+$stmt->execute([':user_id' => $user_id]);
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($results as $result) {
+    $counts[$result['status']] = $result['count'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -43,12 +68,27 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .rating-stars {
             color: #ffc107;
         }
-        .remove-btn {
-            opacity: 0.7;
-            transition: opacity 0.2s;
+        .status-tabs .nav-link {
+            color: #6c757d;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            border-radius: 0.25rem;
         }
-        .remove-btn:hover {
-            opacity: 1;
+        .status-tabs .nav-link.active {
+            color: #fff;
+            background-color: #0d6efd;
+        }
+        .status-tabs .nav-link:hover:not(.active) {
+            background-color: #f8f9fa;
+        }
+        .status-count {
+            background-color: #e9ecef;
+            color: #6c757d;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
         }
     </style>
 </head>
@@ -56,25 +96,62 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include __DIR__ . '/../auth/header.php'; ?>
 
     <div class="container mt-4">
-        <!-- Back Button -->
         <a href="/_Book_Store_/dashboard" class="btn btn-secondary mb-4">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
 
-        <h2 class="mb-4">Your Library</h2>
+        <h2 class="mb-4">My Library</h2>
+
+        <!-- Status Tabs -->
+        <ul class="nav status-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link <?php echo $status === 'want_to_read' ? 'active' : ''; ?>" 
+                   href="?status=want_to_read">
+                    <i class="fas fa-bookmark"></i> Want to Read
+                    <span class="status-count"><?php echo $counts['want_to_read']; ?></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo $status === 'currently_reading' ? 'active' : ''; ?>" 
+                   href="?status=currently_reading">
+                    <i class="fas fa-book-open"></i> Currently Reading
+                    <span class="status-count"><?php echo $counts['currently_reading']; ?></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo $status === 'read' ? 'active' : ''; ?>" 
+                   href="?status=read">
+                    <i class="fas fa-check"></i> Read
+                    <span class="status-count"><?php echo $counts['read']; ?></span>
+                </a>
+            </li>
+        </ul>
 
         <?php if (empty($books)): ?>
             <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Your library is empty. Start adding books to your collection!
+                <i class="fas fa-info-circle"></i> 
+                <?php
+                switch ($status) {
+                    case 'want_to_read':
+                        echo 'Your reading list is empty. Browse books and add them to your library!';
+                        break;
+                    case 'currently_reading':
+                        echo 'You are not currently reading any books. Start reading a book from your library!';
+                        break;
+                    case 'read':
+                        echo 'You haven\'t marked any books as read yet. Keep track of your reading progress!';
+                        break;
+                }
+                ?>
             </div>
         <?php else: ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <?php foreach ($books as $book): ?>
                     <div class="col">
-                        <div class="card h-100">
+                        <div class="card book-card h-100">
                             <img src="<?php echo htmlspecialchars($book['cover_image'] ?? 'https://via.placeholder.com/300x450'); ?>" 
-                                 class="card-img-top" alt="<?php echo htmlspecialchars($book['title']); ?>"
-                                 style="height: 300px; object-fit: cover;">
+                                 class="card-img-top book-cover" 
+                                 alt="<?php echo htmlspecialchars($book['title']); ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($book['title']); ?></h5>
                                 <p class="card-text text-muted">by <?php echo htmlspecialchars($book['author']); ?></p>
@@ -98,12 +175,24 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <a href="/_Book_Store_/book_details?id=<?php echo $book['id']; ?>" class="btn btn-primary">
                                         <i class="fas fa-book"></i> View Details
                                     </a>
-                                    <button class="btn btn-outline-danger" onclick="confirmRemoveBook(<?php echo $book['id']; ?>, '<?php echo htmlspecialchars(addslashes($book['title'])); ?>')">
+                                    <button class="btn btn-outline-danger" onclick="removeFromReadingList(<?php echo $book['id']; ?>, '<?php echo htmlspecialchars(addslashes($book['title'])); ?>')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                                 <small class="text-muted d-block mt-2">
-                                    Added on <?php echo date('F j, Y', strtotime($book['date_added'])); ?>
+                                    <?php
+                                    switch ($status) {
+                                        case 'want_to_read':
+                                            echo 'Added on ' . date('F j, Y', strtotime($book['date_added']));
+                                            break;
+                                        case 'currently_reading':
+                                            echo 'Started on ' . date('F j, Y', strtotime($book['date_started']));
+                                            break;
+                                        case 'read':
+                                            echo 'Finished on ' . date('F j, Y', strtotime($book['date_finished']));
+                                            break;
+                                    }
+                                    ?>
                                 </small>
                             </div>
                         </div>
@@ -137,7 +226,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         let bookToRemove = null;
         const removeBookModal = new bootstrap.Modal(document.getElementById('removeBookModal'));
 
-        function confirmRemoveBook(bookId, bookTitle) {
+        function removeFromReadingList(bookId, bookTitle) {
             bookToRemove = bookId;
             document.getElementById('bookTitle').textContent = bookTitle;
             removeBookModal.show();
@@ -145,13 +234,13 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         document.getElementById('confirmRemoveBtn').addEventListener('click', function() {
             if (bookToRemove) {
-                removeFromLibrary(bookToRemove);
+                removeFromReadingList(bookToRemove);
                 removeBookModal.hide();
             }
         });
 
-        function removeFromLibrary(bookId) {
-            fetch('/_Book_Store_/api/remove_book.php', {
+        function removeFromReadingList(bookId) {
+            fetch('/_Book_Store_/api/remove_reading_status.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -163,17 +252,8 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Remove the book card from the UI
-                    const bookCard = document.querySelector(`[data-book-id="${bookId}"]`);
-                    if (bookCard) {
-                        bookCard.remove();
-                    }
-                    // If no books left, show the empty message
-                    if (document.querySelectorAll('.card').length === 0) {
-                        location.reload();
-                    }
+                    location.reload();
                 } else {
-                    // Show error message
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'alert alert-danger mt-3';
                     errorDiv.textContent = data.message;
@@ -192,4 +272,4 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </script>
 </body>
-</html>
+</html> 

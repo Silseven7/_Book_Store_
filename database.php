@@ -43,13 +43,12 @@ function get_email($pdo, $email){
 }
 
 function get_user_info($pdo, $username){
-    $query = "SELECT * FROM users WHERE username = :username";
+    $query = "SELECT id, username, real_name, email, password FROM users WHERE username = :username";
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
     return $user;
 }
 
@@ -87,7 +86,7 @@ function create_tables($pdo) {
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         book_id INT NOT NULL,
-        status ENUM('want_to_read', 'currently_reading', 'read') NOT NULL,
+        status VARCHAR(20) NOT NULL,
         date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         date_started DATE,
         date_finished DATE,
@@ -136,6 +135,17 @@ function create_tables($pdo) {
         PRIMARY KEY (shelf_id, book_id),
         FOREIGN KEY (shelf_id) REFERENCES book_shelves(id),
         FOREIGN KEY (book_id) REFERENCES books(id)
+    )");
+
+    // User Library table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS user_library (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        book_id INT NOT NULL,
+        date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (book_id) REFERENCES books(id),
+        UNIQUE KEY unique_user_book (user_id, book_id)
     )");
 }
 
@@ -203,6 +213,41 @@ function search_books($pdo, $search_term, $limit = 20, $offset = 0) {
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function get_user_reading_stats($pdo, $user_id) {
+    $stats = [
+        'total_books' => 0,
+        'average_rating' => 0,
+        'total_reviews' => 0,
+        'reading_list' => 0
+    ];
+
+    // Get total books read
+    $query = "SELECT COUNT(*) FROM reading_lists WHERE user_id = :user_id AND status = 'read'";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $stats['total_books'] = $stmt->fetchColumn();
+
+    // Get average rating
+    $query = "SELECT AVG(rating) FROM reviews WHERE user_id = :user_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $stats['average_rating'] = $stmt->fetchColumn() ?: 0;
+
+    // Get total reviews
+    $query = "SELECT COUNT(*) FROM reviews WHERE user_id = :user_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $stats['total_reviews'] = $stmt->fetchColumn();
+
+    // Get reading list count
+    $query = "SELECT COUNT(*) FROM reading_lists WHERE user_id = :user_id AND status = 'want_to_read'";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':user_id' => $user_id]);
+    $stats['reading_list'] = $stmt->fetchColumn();
+
+    return $stats;
 }
 
 // Initialize tables

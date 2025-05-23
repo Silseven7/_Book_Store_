@@ -14,10 +14,19 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
   } elseif (!does_password_exist($pdo, $password, $username)) {
     $error_message = "❌ Password is incorrect, try again.";
   } else {
+    // Get user info
+    $user = get_user_info($pdo, $username);
+    
+    // Regenerate session ID for security
     session_regenerate_id(true);
+    
+    // Set session variables
     $_SESSION['logged_in'] = true;
-    $_SESSION['real_name'] = $_POST['real_name'];
-    $_SESSION['username'] = $_POST['username'];
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['real_name'] = $user['real_name'];
+    
+    // Redirect to dashboard
     header("Location: /_Book_Store_/dashboard");
     exit;
   }
