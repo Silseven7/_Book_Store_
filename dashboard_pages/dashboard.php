@@ -367,11 +367,17 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
     <?php include __DIR__ . '/../auth/header.php'; ?>
 
     <div class="container mt-4">
-        <!-- Welcome Message -->
-        <div class="welcome-message">
-            <h2>Welcome back, <?php echo htmlspecialchars($_SESSION['real_name']); ?>! 📚</h2>
-            <p>Your personal reading journey continues...</p>
+        <!-- Welcome Message with Logout Button -->
+        <div class="welcome-message d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Welcome back, <?php echo htmlspecialchars($_SESSION['real_name']); ?>! 📚</h2>
+            <form action="/_Book_Store_/logout" method="POST" class="mb-0">
+                <button type="submit" 
+                    class="bg-red-600 hover:bg-red-800 text-white font-bold italic text-lg px-5 py-2 rounded transition-colors duration-300">
+                    Logout
+                </button>
+            </form>
         </div>
+        <p>Your personal reading journey continues...</p>
 
         <div class="row mb-4">
             <!-- Clock and Date Card -->
@@ -515,6 +521,7 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
             </div>
         </div>
     </div>
+</body>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
