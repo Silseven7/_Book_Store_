@@ -34,7 +34,7 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <div class="bg-white text-black p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
-  <h2 class="text-2xl font-semibold mb-6 text-center">🔐 Login to Bookstore</h2>
+  <h2 class="text-2xl font-semibold mb-6 text-center">🔐 Login to ShelfShare</h2>
 
   <?php if (!empty($error_message)): ?>
     <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
@@ -67,7 +67,9 @@ if (isset($_POST['login']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
   </p>
 
   <p class="mt-2 text-center text-sm">
-    <a href="/_Book_Store_/landing_page" class="text-gray-500 hover:underline">⬅ Back to Home</a>
+    <a href="/_Book_Store_/landing_page" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> ⬅ Previous Page
+    </a>
   </p>
 </div>
 

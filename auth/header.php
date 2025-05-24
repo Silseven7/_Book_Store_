@@ -10,3 +10,6 @@
 </head>
 <body class="bg-cover bg-center text-white min-h-screen flex items-center justify-center"
       style="background-image: url('https://wallpapercave.com/wp/wp6974213.jpg');">
+            <a href="/_Book_Store_/dashboard" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>

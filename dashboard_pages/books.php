@@ -24,33 +24,164 @@ $total_pages = ceil($total_books / $per_page);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Books - Book Store</title>
+    <title>Books - ShelfShare</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .book-card {
-            transition: transform 0.2s;
-            height: 100%;
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        .book-card {
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
         .book-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         }
+
         .book-cover {
             height: 300px;
             object-fit: cover;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
         }
+
         .rating-stars {
             color: #ffc107;
         }
-        .delete-btn {
-            opacity: 0.7;
-            transition: opacity 0.2s;
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
         }
-        .delete-btn:hover {
-            opacity: 1;
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .modal-body {
-            color: #000;
+
+        .btn-primary.btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #c3cfe2 0%, #f5f7fa 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .card-text {
+            color: #7f8c8d;
+        }
+
+        .text-muted {
+            color: #95a5a6 !important;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: none;
+            border-radius: 15px;
+            color: #2c3e50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .modal-footer {
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ee5253 0%, #ff6b6b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-select {
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
     </style>
 </head>
@@ -101,7 +232,7 @@ $total_pages = ceil($total_books / $per_page);
                 </form>
             </div>
             <div class="col-md-4 text-end">
-                <a href="/_Book_Store_/add_book" class="btn btn-success">
+                <a href="/_Book_Store_/add_book" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Add New Book
                 </a>
             </div>

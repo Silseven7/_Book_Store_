@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bookstore Landing Page</title>
+  <title>ShelfShare Landing Page</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 
   
   <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
   <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <style>
+    .handwriting {
+      font-family: 'Caveat', cursive;
+      letter-spacing: 0.5px;
+      line-height: 1.8;
+    }
+  </style>
 </head>
 <body class="scroll-smooth">
 
@@ -19,7 +27,7 @@
     id="hero"
   >
     <div id="heroContent" class="text-center">
-      <h1 class="text-5xl font-bold mb-6">Welcome to Our Bookstore</h1>
+      <h1 class="text-5xl font-bold mb-6">Welcome to ShelfShare</h1>
       <div class="space-x-4">
         <a href="/_Book_Store_/login_form" class="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition">Login</a>
         <a href="/_Book_Store_/enroll_form" class="bg-transparent border border-white px-6 py-2 rounded-full font-semibold hover:bg-white hover:text-black transition">Enroll</a>
@@ -39,18 +47,20 @@
     <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
       
       <div class="flex justify-center" id="aboutImageWrapper">
-        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794" 
+        <img src="https://i.imgur.com/4haWgJD.jpeg" 
              alt="Bookshelf" 
              class="rounded-2xl shadow-lg w-full max-w-md"
              id="aboutImage">
       </div>
   
       
-      <div id="aboutText">
-        <h3 class="text-3xl font-bold mb-4 text-white">Why We Built This</h3>
-        <p class="text-lg text-white leading-relaxed">
-          Our mission was to create a simple, smooth, and beautiful online bookstore where readers can find their favorite titles without hassle.
-          Whether you're here for classics, new releases, or academic resources — this platform was built for you.
+      <div id="aboutText" class="p-8">
+        <h3 class="text-4xl font-bold mb-6 text-white handwriting">Why We Built This</h3>
+        <p class="text-2xl text-white mb-6 handwriting">
+          ShelfShare is a platform designed to foster a community of readers, enabling users to share their literary insights and write thoughtful reviews for a wide range of books. Created to inspire and encourage a love of reading, ShelfShare serves as a hub for meaningful book discussions and discovery.
+        </p>
+        <p class="text-2xl text-white handwriting italic">
+          This platform was developed by Suay Ilseven and Batuhan Ekinci. All rights reserved.
         </p>
       </div>
     </div>
