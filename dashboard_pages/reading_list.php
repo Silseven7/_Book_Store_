@@ -216,7 +216,7 @@ foreach ($results as $result) {
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
 
-        <h2 class="mb-4">My Library</h2>
+        <h2 class="mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">My Library</h2>
 
         <!-- Status Tabs -->
         <ul class="nav status-tabs mb-4">

@@ -29,7 +29,8 @@ if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':email', $email);
 
     if ($stmt->execute()) {
-      echo "<script>alert('🎉 User enrolled successfully!'); window.location.href = '/_Book_Store_/login_form';</script>";
+      $_SESSION['enroll_success'] = true;
+      header("Location: /_Book_Store_/login_form");
       exit;
     } else {
       $error_message = "❌ Something went wrong. Please try again.";
@@ -45,6 +46,13 @@ if (isset($_POST['enroll']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4">
       <?= $error_message ?>
     </div>
+  <?php endif; ?>
+
+  <?php if (isset($_SESSION['enroll_success'])): ?>
+    <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4">
+      🎉 User enrolled successfully! Please log in.
+    </div>
+    <?php unset($_SESSION['enroll_success']); ?>
   <?php endif; ?>
 
   <form action="/_Book_Store_/enroll_form" method="POST" class="space-y-5">

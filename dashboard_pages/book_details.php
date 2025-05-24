@@ -262,7 +262,7 @@ $user_id = $_SESSION['user_id'] ?? null;
                 <div class="mt-4">
                     <h5>Reviews</h5>
                     <?php foreach ($reviews as $review): ?>
-                    <div class="card review-card mb-3">
+                    <div class="card review-card mb-3" data-review-id="<?php echo $review['id']; ?>">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-2">
                                 <img src="<?php echo htmlspecialchars($review['profile_image'] ?? 'https://via.placeholder.com/40'); ?>" 
@@ -274,6 +274,13 @@ $user_id = $_SESSION['user_id'] ?? null;
                                         <?php echo date('F j, Y', strtotime($review['created_at'])); ?>
                                     </small>
                                 </div>
+                                <?php if ($user_id && $review['user_id'] == $user_id): ?>
+                                <div class="ms-auto">
+                                    <button onclick="deleteReview(<?php echo $review['id']; ?>)" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <?php endif; ?>
                             </div>
                             <div class="rating-stars mb-2">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -427,6 +434,68 @@ $user_id = $_SESSION['user_id'] ?? null;
                 btnGroup.parentNode.appendChild(errorDiv);
                 setTimeout(() => errorDiv.remove(), 3000);
             });
+        }
+
+        function deleteReview(reviewId) {
+            const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`);
+            const confirmDiv = document.createElement('div');
+            confirmDiv.className = 'alert alert-warning mt-2';
+            confirmDiv.innerHTML = `
+                Are you sure you want to delete this review?
+                <div class="mt-2">
+                    <button class="btn btn-danger btn-sm me-2" onclick="confirmDelete(${reviewId})">Yes, Delete</button>
+                    <button class="btn btn-secondary btn-sm" onclick="cancelDelete(${reviewId})">Cancel</button>
+                </div>
+            `;
+            reviewCard.appendChild(confirmDiv);
+        }
+
+        function confirmDelete(reviewId) {
+            fetch('/_Book_Store_/api/delete_review.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    review_id: reviewId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`);
+                    reviewCard.remove();
+                    // Show success message
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'alert alert-success mt-3';
+                    successDiv.textContent = 'Review deleted successfully';
+                    document.querySelector('.reviews-section').prepend(successDiv);
+                    setTimeout(() => successDiv.remove(), 3000);
+                } else {
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-3';
+                    errorDiv.textContent = data.message || 'Error deleting review';
+                    document.querySelector('.reviews-section').prepend(errorDiv);
+                    setTimeout(() => errorDiv.remove(), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger mt-3';
+                errorDiv.textContent = 'Error deleting review';
+                document.querySelector('.reviews-section').prepend(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            });
+        }
+
+        function cancelDelete(reviewId) {
+            const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`);
+            const confirmDiv = reviewCard.querySelector('.alert');
+            if (confirmDiv) {
+                confirmDiv.remove();
+            }
         }
     </script>
 </body>

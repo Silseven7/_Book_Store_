@@ -159,6 +159,47 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        .library-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .library-stats h2 {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .stat-item h3 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -170,7 +211,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
 
-        <h2 class="mb-4">Your Library</h2>
+        <h2 class="mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">Your Library</h2>
 
         <?php if (empty($books)): ?>
             <div class="alert alert-info">
