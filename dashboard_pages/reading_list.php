@@ -206,6 +206,53 @@ foreach ($results as $result) {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
         }
+
+        .status-tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .status-tabs .nav-link {
+            color: #2c3e50;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-tabs .nav-link:hover {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+        }
+
+        .status-tabs .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-tabs .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .status-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+
+        .status-tabs .nav-link.active .status-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>

@@ -230,6 +230,19 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
             margin-bottom: 0.5rem;
         }
 
+        .stat-value a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .stat-value a:hover {
+            color: #667eea;
+            transform: scale(1.1);
+        }
+
         .stat-label {
             color: #7f8c8d;
             font-size: 1rem;
@@ -433,7 +446,9 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                         <div class="stat-icon">
                             <i class="fas fa-book"></i>
                         </div>
-                        <div class="stat-value"><?php echo $stats['total_books']; ?></div>
+                        <div class="stat-value">
+                            <a href="/_Book_Store_/library" class="text-decoration-none text-dark"><?php echo $stats['total_books']; ?></a>
+                        </div>
                         <div class="stat-label">Total Books</div>
                     </div>
                 </div>
@@ -444,7 +459,9 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                         <div class="stat-icon">
                             <i class="fas fa-bookmark"></i>
                         </div>
-                        <div class="stat-value"><?php echo $counts['want_to_read']; ?></div>
+                        <div class="stat-value">
+                            <a href="/_Book_Store_/reading_list?status=want_to_read" class="text-decoration-none text-dark"><?php echo $counts['want_to_read']; ?></a>
+                        </div>
                         <div class="stat-label">Want to Read</div>
                     </div>
                 </div>
@@ -455,7 +472,9 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                         <div class="stat-icon">
                             <i class="fas fa-book-open"></i>
                         </div>
-                        <div class="stat-value"><?php echo $counts['currently_reading']; ?></div>
+                        <div class="stat-value">
+                            <a href="/_Book_Store_/reading_list?status=currently_reading" class="text-decoration-none text-dark"><?php echo $counts['currently_reading']; ?></a>
+                        </div>
                         <div class="stat-label">Currently Reading</div>
                     </div>
                 </div>
@@ -466,7 +485,9 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                         <div class="stat-icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <div class="stat-value"><?php echo $stats['books_read']; ?></div>
+                        <div class="stat-value">
+                            <a href="/_Book_Store_/reading_list?status=read" class="text-decoration-none text-dark"><?php echo $stats['books_read']; ?></a>
+                        </div>
                         <div class="stat-label">Books Read</div>
                     </div>
                 </div>
@@ -488,7 +509,9 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                         <div class="stat-icon">
                             <i class="fas fa-pen-fancy"></i>
                         </div>
-                        <div class="stat-value"><?php echo $stats['total_reviews']; ?></div>
+                        <div class="stat-value">
+                            <a href="/_Book_Store_/reviews" class="text-decoration-none text-dark"><?php echo $stats['total_reviews']; ?></a>
+                        </div>
                         <div class="stat-label">Reviews Written</div>
                     </div>
                 </div>
