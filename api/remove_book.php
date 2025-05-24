@@ -44,7 +44,11 @@ try {
     $stmt2 = $pdo->prepare('DELETE FROM reading_lists WHERE user_id = :user_id AND book_id = :book_id');
     $stmt2->execute([':user_id' => $user_id, ':book_id' => $book_id]);
     $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Book removed from your library and reading list.']);
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Book removed from your library and reading list.',
+        'updateDashboard' => true
+    ]);
 } catch (PDOException $e) {
     $pdo->rollBack();
     http_response_code(500);

@@ -287,7 +287,6 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
             color: #7f8c8d;
             margin-bottom: 1.5rem;
             font-size: 1.1rem;
-            line-height: 1.6;
         }
 
         .action-card .btn {
@@ -367,17 +366,11 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
     <?php include __DIR__ . '/../auth/header.php'; ?>
 
     <div class="container mt-4">
-        <!-- Welcome Message with Logout Button -->
-        <div class="welcome-message d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Welcome back, <?php echo htmlspecialchars($_SESSION['real_name']); ?>! 📚</h2>
-            <form action="/_Book_Store_/logout" method="POST" class="mb-0">
-                <button type="submit" 
-                    class="bg-red-600 hover:bg-red-800 text-white font-bold italic text-lg px-5 py-2 rounded transition-colors duration-300">
-                    Logout
-                </button>
-            </form>
+        <!-- Welcome Message -->
+        <div class="welcome-message">
+            <h2>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! 📚</h2>
+            <p>Your personal reading journey continues...</p>
         </div>
-        <p>Your personal reading journey continues...</p>
 
         <div class="row mb-4">
             <!-- Clock and Date Card -->
@@ -415,11 +408,44 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                             <i class="fas fa-book"></i>
                         </div>
                         <div class="stat-value"><?php echo $stats['total_books']; ?></div>
-                        <div class="stat-label">Books Read</div>
+                        <div class="stat-label">Total Books</div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <div class="stat-icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <div class="stat-value"><?php echo $counts['want_to_read']; ?></div>
+                        <div class="stat-label">Want to Read</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-value"><?php echo $counts['currently_reading']; ?></div>
+                        <div class="stat-label">Currently Reading</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-value"><?php echo $stats['books_read']; ?></div>
+                        <div class="stat-label">Books Read</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 offset-md-3">
                 <div class="card stat-card">
                     <div class="card-body text-center">
                         <div class="stat-icon">
@@ -438,17 +464,6 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                         </div>
                         <div class="stat-value"><?php echo $stats['total_reviews']; ?></div>
                         <div class="stat-label">Reviews Written</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="card stat-card">
-                    <div class="card-body text-center">
-                        <div class="stat-icon">
-                            <i class="fas fa-bookmark"></i>
-                        </div>
-                        <div class="stat-value"><?php echo $counts['want_to_read']; ?></div>
-                        <div class="stat-label">Want to Read</div>
                     </div>
                 </div>
             </div>
@@ -521,7 +536,6 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
             </div>
         </div>
     </div>
-</body>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -558,7 +572,28 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            // Listen for custom event when a book is removed
+            document.addEventListener('bookRemoved', function() {
+                updateDashboardStats();
+            });
         });
+
+        // Function to update dashboard statistics
+        function updateDashboardStats() {
+            fetch('/_Book_Store_/api/get_dashboard_stats.php')
+                .then(response => response.json())
+                .then(data => {
+                    // Update all statistics
+                    document.querySelector('.stat-value:nth-child(2)').textContent = data.total_books;
+                    document.querySelector('.stat-value:nth-child(3)').textContent = data.want_to_read;
+                    document.querySelector('.stat-value:nth-child(4)').textContent = data.currently_reading;
+                    document.querySelector('.stat-value:nth-child(5)').textContent = data.books_read;
+                    document.querySelector('.stat-value:nth-child(6)').textContent = data.average_rating.toFixed(1);
+                    document.querySelector('.stat-value:nth-child(7)').textContent = data.total_reviews;
+                })
+                .catch(error => console.error('Error updating dashboard stats:', error));
+        }
     </script>
 </body>
 </html>

@@ -71,7 +71,7 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <?php foreach ($books as $book): ?>
                     <div class="col">
-                        <div class="card h-100">
+                        <div class="card h-100" data-book-id="<?php echo $book['id']; ?>">
                             <img src="<?php echo htmlspecialchars($book['cover_image'] ?? 'https://via.placeholder.com/300x450'); ?>" 
                                  class="card-img-top" alt="<?php echo htmlspecialchars($book['title']); ?>"
                                  style="height: 300px; object-fit: cover;">
@@ -171,6 +171,11 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     // If no books left, show the empty message
                     if (document.querySelectorAll('.card').length === 0) {
                         location.reload();
+                    }
+                    // Trigger dashboard update if needed
+                    if (data.updateDashboard) {
+                        // Dispatch custom event to update dashboard
+                        window.dispatchEvent(new CustomEvent('bookRemoved'));
                     }
                 } else {
                     // Show error message
