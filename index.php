@@ -25,25 +25,36 @@ $routes = [
     '/enroll_form' => 'auth/enroll_form.php',
     '/login_form' => 'auth/login_form.php',
 
-    '/books' => 'dashboard_pages/books.php',
-    '/book_details' => 'dashboard_pages/book_details.php',
     '/add_book' => 'dashboard_pages/add_book.php',
-    '/edit_book' => 'dashboard_pages/edit_book.php',
+    '/book_details' => 'dashboard_pages/book_details.php',
+    '/books' => 'dashboard_pages/books.php',
+    '/browse_books' => 'dashboard_pages/browse_books.php',
     '/dashboard' => 'dashboard_pages/dashboard.php',
+    '/edit_book' => 'dashboard_pages/edit_book.php',
     '/library' => 'dashboard_pages/library.php',
     '/logout' => 'dashboard_pages/logout.php',
+    '/reading_list' => 'dashboard_pages/reading_list.php',
     '/reviews' => 'dashboard_pages/reviews.php',
+
     '/profile' => 'dashboard_pages/profile.php',
     '/shelves' => 'dashboard_pages/shelves.php',
-    '/reading_list' => 'dashboard_pages/reading_list.php'
+    '/reading_list' => 'dashboard_pages/reading_list.php',
+
+    '/delete_book' => 'api/delete_book.php',
+    '/removed_book' => 'api/removed_book.php',
+    '/remove_reading_status' => 'api/remove_reading_status.php',
+    '/save_book' => 'api/save_book.php',
+    '/submit_review' => 'api/submit_review.php',
+    '/update_reading_status' => 'api/update_reading_status.php',
 ];
 
 $auth_routes = ['/landing_page', '/header', '/enroll_form', '/login_form'];
 $dashboard_routes = [
-    '/dashboard', '/books', '/book_details', '/add_book', '/edit_book',
+    '/dashboard', '/books', '/book_details', '/add_book', '/browse_books', '/edit_book',
     '/library', '/logout', '/reviews', '/profile', 
     '/shelves', '/reading_list'
 ];
+$api_routes = [];
 
 // Check if trying to access dashboard routes
 if (in_array($uri, $dashboard_routes)) {

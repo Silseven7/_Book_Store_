@@ -14,13 +14,13 @@
                     <i class="fas fa-bookmark"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#" onclick="quickSave(<?php echo $book['id']; ?>, 'want_to_read')">
+                    <li><a class="dropdown-item" href="#" onclick="quickSave(<?php echo (int)$book['id']; ?>, 'want_to_read'); return false;">
                         <i class="fas fa-bookmark"></i> Want to Read
                     </a></li>
-                    <li><a class="dropdown-item" href="#" onclick="quickSave(<?php echo $book['id']; ?>, 'currently_reading')">
+                    <li><a class="dropdown-item" href="#" onclick="quickSave(<?php echo (int)$book['id']; ?>, 'currently_reading'); return false;">
                         <i class="fas fa-book-open"></i> Currently Reading
                     </a></li>
-                    <li><a class="dropdown-item" href="#" onclick="quickSave(<?php echo $book['id']; ?>, 'read')">
+                    <li><a class="dropdown-item" href="#" onclick="quickSave(<?php echo (int)$book['id']; ?>, 'read'); return false;">
                         <i class="fas fa-check"></i> Read
                     </a></li>
                 </ul>
@@ -32,10 +32,9 @@
     </div>
 </div>
 
-<!-- Add this before the closing </body> tag -->
 <script>
 function quickSave(bookId, status) {
-    fetch('/_Book_Store_/api/update_reading_status.php', {
+    fetch('/_Book_Store_/update_reading_status', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -47,45 +46,39 @@ function quickSave(bookId, status) {
     })
     .then(response => response.json())
     .then(data => {
-        // Show success or error message
-        const toast = document.createElement('div');
-        toast.className = 'position-fixed bottom-0 end-0 p-3';
-        toast.style.zIndex = '5';
-        toast.innerHTML = `
-            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <i class="fas ${data.success ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-danger'} me-2"></i>
-                    <strong class="me-auto">${data.success ? 'Success' : 'Error'}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    ${data.message}
-                </div>
-            </div>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    })
+        showToast(data.success, data.message);
+    }) 
     .catch(error => {
         console.error('Error:', error);
-        // Show error message
-        const toast = document.createElement('div');
-        toast.className = 'position-fixed bottom-0 end-0 p-3';
-        toast.style.zIndex = '5';
-        toast.innerHTML = `
-            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <i class="fas fa-exclamation-circle text-danger me-2"></i>
-                    <strong class="me-auto">Error</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    Error saving book to reading list
-                </div>
-            </div>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        showToast(false, 'Error saving book to reading list');
     });
 }
-</script> 
+
+function showToast(success, message) {
+    const toastContainer = document.createElement('div');
+    toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+    toastContainer.style.zIndex = '1055';  // Bootstrap toasts use 1050+ for overlay
+
+    toastContainer.innerHTML = `
+        <div class="toast align-items-center text-bg-${success ? 'success' : 'danger'} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(toastContainer);
+
+    // Use Bootstrap toast JS to properly initialize dismissal
+    const toastEl = toastContainer.querySelector('.toast');
+    const bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    bsToast.show();
+
+    toastEl.addEventListener('hidden.bs.toast', () => {
+        toastContainer.remove();
+    });
+}
+</script>
