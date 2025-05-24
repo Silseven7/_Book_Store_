@@ -222,7 +222,7 @@ $total_pages = ceil($total_books / $per_page);
             if (!currentBookId) return;
 
             try {
-                const response = await fetch('/_Book_Store_/api/delete_book.php', {
+                const response = await fetch('/_Book_Store_/delete_book', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -244,7 +244,7 @@ $total_pages = ceil($total_books / $per_page);
         });
 
         function quickSave(bookId, status) {
-            fetch('/_Book_Store_/api/update_reading_status.php', {
+            fetch('/_Book_Store_/update_reading_status', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
