@@ -360,6 +360,25 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
             font-size: 1.1rem;
             opacity: 0.9;
         }
+
+        .welcome-message .btn-light {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-message .btn-light:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .welcome-message .btn-light i {
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -367,9 +386,16 @@ $random_quote = $writer_quotes[array_rand($writer_quotes)];
 
     <div class="container mt-4">
         <!-- Welcome Message -->
-        <div class="welcome-message">
-            <h2>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! 📚</h2>
-            <p>Your personal reading journey continues...</p>
+        <div class="welcome-message d-flex justify-content-between align-items-center">
+            <div>
+                <h2>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! 📚</h2>
+                <p>Your personal reading journey continues...</p>
+            </div>
+            <form action="/_Book_Store_/logout" method="POST" class="mb-0">
+                <button type="submit" class="btn btn-light btn-lg">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
         </div>
 
         <div class="row mb-4">
