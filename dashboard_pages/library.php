@@ -211,11 +211,25 @@ $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
 
-        <h2 class="mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">Your Library</h2>
+        <div class="text-center mb-5">
+            <div style="background: rgba(255, 255, 255, 0.75); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); display: inline-block; backdrop-filter: blur(12px);">
+                <h2 style="color: #1a1a1a; font-weight: 700; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Your Library</h2>
+                <div style="width: 100px; height: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto; border-radius: 2px;"></div>
+            </div>
+        </div>
 
         <?php if (empty($books)): ?>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Your library is empty. Start adding books to your collection!
+            <div class="text-center py-5">
+                <div class="empty-library-message" style="background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                    <i class="fas fa-books fa-4x mb-4" style="color: #667eea;"></i>
+                    <h3 class="mb-3" style="color: #2c3e50; font-weight: 600;">Your Library is Empty</h3>
+                    <p class="mb-4" style="color: #34495e; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                        Start building your personal collection of books! Browse through our catalog and save the books you love.
+                    </p>
+                    <a href="/_Book_Store_/books" class="btn btn-primary btn-lg px-4 py-2">
+                        <i class="fas fa-search me-2"></i> Browse Books
+                    </a>
+                </div>
             </div>
         <?php else: ?>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">

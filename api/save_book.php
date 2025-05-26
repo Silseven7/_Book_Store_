@@ -44,29 +44,20 @@ try {
         exit;
     }
 
-    // Check if book is already in user's library
-    $query = "SELECT id FROM user_library WHERE user_id = :user_id AND book_id = :book_id";
+    // Add book to user's library using INSERT IGNORE
+    $query = "INSERT IGNORE INTO user_library (user_id, book_id, date_added) VALUES (:user_id, :book_id, NOW())";
     $stmt = $pdo->prepare($query);
     $stmt->execute([
         ':user_id' => $user_id,
         ':book_id' => $book_id
     ]);
-    
-    if ($stmt->fetch()) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Book is already in your library']);
-        exit;
+
+    // Check if any rows were affected
+    if ($stmt->rowCount() > 0) {
+        echo json_encode(['success' => true, 'message' => 'Book added to your library']);
+    } else {
+        echo json_encode(['success' => true, 'message' => 'Book is already in your library']);
     }
-
-    // Add book to user's library
-    $query = "INSERT INTO user_library (user_id, book_id, date_added) VALUES (:user_id, :book_id, NOW())";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':user_id' => $user_id,
-        ':book_id' => $book_id
-    ]);
-
-    echo json_encode(['success' => true, 'message' => 'Book added to your library']);
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error saving book to library']);

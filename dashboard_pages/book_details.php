@@ -168,6 +168,12 @@ $user_id = $_SESSION['user_id'] ?? null;
                     $stmt = $pdo->prepare($query);
                     $stmt->execute([':user_id' => $user_id, ':book_id' => $book_id]);
                     $current_status = $stmt->fetchColumn();
+
+                    // Check if book is already in user's library
+                    $query = "SELECT id FROM user_library WHERE user_id = :user_id AND book_id = :book_id";
+                    $stmt = $pdo->prepare($query);
+                    $stmt->execute([':user_id' => $user_id, ':book_id' => $book_id]);
+                    $is_in_library = $stmt->fetch();
                     ?>
                     <div class="btn-group w-100" data-book-id="<?php echo $book_id; ?>">
                         <button class="btn btn-outline-primary <?php echo $current_status === 'want_to_read' ? 'active' : ''; ?>" 
@@ -186,9 +192,15 @@ $user_id = $_SESSION['user_id'] ?? null;
                             <i class="fas fa-check"></i> Read
                         </button>
                     </div>
+                    <?php if (!$is_in_library): ?>
                     <button class="btn btn-success w-100 mt-2" onclick="saveToLibrary()">
                         <i class="fas fa-plus"></i> Save to Library
                     </button>
+                    <?php else: ?>
+                    <button class="btn btn-secondary w-100 mt-2" disabled>
+                        <i class="fas fa-check"></i> Saved to Library
+                    </button>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
             </div>
@@ -348,29 +360,29 @@ $user_id = $_SESSION['user_id'] ?? null;
                     book_id: <?php echo $book_id; ?>
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error saving book to library');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    // Update button appearance instead of showing alert
+                    // Update button appearance
                     const saveBtn = document.querySelector('.btn-success');
                     saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved to Library';
                     saveBtn.classList.remove('btn-success');
                     saveBtn.classList.add('btn-secondary');
                     saveBtn.disabled = true;
-                } else {
-                    // Show error in a more elegant way
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'alert alert-danger mt-2';
-                    errorDiv.textContent = data.message;
-                    document.querySelector('.btn-success').parentNode.appendChild(errorDiv);
-                    setTimeout(() => errorDiv.remove(), 3000);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'alert alert-danger mt-2';
-                errorDiv.textContent = 'Error saving book to library';
+                errorDiv.textContent = error.message;
                 document.querySelector('.btn-success').parentNode.appendChild(errorDiv);
                 setTimeout(() => errorDiv.remove(), 3000);
             });

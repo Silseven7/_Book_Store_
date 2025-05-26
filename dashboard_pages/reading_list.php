@@ -263,7 +263,12 @@ foreach ($results as $result) {
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
 
-        <h2 class="mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">My Library</h2>
+        <div class="text-center mb-5">
+            <div style="background: rgba(255, 255, 255, 0.75); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); display: inline-block; backdrop-filter: blur(12px);">
+                <h2 style="color: #1a1a1a; font-weight: 700; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">My Reading List</h2>
+                <div style="width: 100px; height: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto; border-radius: 2px;"></div>
+            </div>
+        </div>
 
         <!-- Status Tabs -->
         <ul class="nav status-tabs mb-4">
